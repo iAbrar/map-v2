@@ -89,8 +89,9 @@ h2 {
 .search-box-wrapper {
   position: absolute;
   width: 100%;
-  top: 0px;
+top: 198px
 }
+
 .search-box-wrapper .search-box-inner h2 {
   margin-bottom: 20px;
 }
