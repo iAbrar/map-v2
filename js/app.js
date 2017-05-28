@@ -1,6 +1,7 @@
  
   // Create marker for the location "Model"
   var map;
+
   var initialLocation = [
     {
       name: "Nino",
@@ -111,9 +112,9 @@
           return location.category === this.selectedCategory();
         });
       } //.conditional
+     
     }); //.filteredLocation
-  
-
+ 
   }; //end view
 
   // *******************************
@@ -126,41 +127,60 @@
       zoom: 16
     };
     map= new google.maps.Map(document.getElementById("map"), mapOptions);
-showMarkers(initialLocation);
+ console.log(initialLocation);
+    for (var i = 0; i < initialLocation.length; i++) {
+     
+      addMarker(initialLocation[i]);
+    }
+
 
   }
 
-  function showMarkers(locations){
+function addMarker(location) {
+  console.log('hi');
+  var gmarkers1 = [];
+var markers1 = [];
+var infowindow = new google.maps.InfoWindow({
+    content: ''
+});
+    var category = location.category;
+    var title = location.name;
+    var pos = new google.maps.LatLng(location.lat, location.log);
+    var content = "Hello";
 
-   //locations = ko.observableArray([]);
+    marker = new google.maps.Marker({
+        title: title,
+        position: pos,
+        category: category,
+        map: map
+    });
 
-        var markers=[];
- var bounds = new google.maps.LatLngBounds();
-        var largeInfowindow = new google.maps.InfoWindow();
+    gmarkers1.push(marker);
 
-        // The following group uses the location array to create an array of markers on initialize.
-        for (var i = 0; i < locations.length; i++) {
-          // Get the position from the location array.
-          var position = locations[i].LatLng;
-          var title = locations[i].name;
-      
-          // Create a marker per location, and put into markers array.
-          var marker = new google.maps.Marker({
-            map: map,
-            position: position,
-            title: title,
-            animation: google.maps.Animation.DROP,
-            id: i
-          });
-          // Push the marker to our array of markers.
-          markers.push(marker);
-          // Create an onclick event to open an infowindow at each marker.
-          marker.addListener('click', function() {
-            populateInfoWindow(this, largeInfowindow);
-          });
-          bounds.extend(markers[i].position);
+    // Marker click listener
+    google.maps.event.addListener(marker, 'click', (function (marker, content) {
+        return function () {
+            console.log('Gmarker 1 gets pushed');
+            infowindow.setContent(content);
+            infowindow.open(map, marker);
+            map.panTo(this.getPosition());
+            map.setZoom(15);
         }
-  }
+    })(marker, content));
+}
+
+  // icon of that color. The icon will be 21 px wide by 34 high, have an origin
+      // of 0, 0 and be anchored at 10, 34).
+      function makeMarkerIcon(markerColor) {
+        var markerImage = new google.maps.MarkerImage(
+          'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+          '|40|_|%E2%80%A2',
+          new google.maps.Size(21, 34),
+          new google.maps.Point(0, 0),
+          new google.maps.Point(10, 34),
+          new google.maps.Size(21,34));
+        return markerImage;
+      }
 
         // This function populates the infowindow when the marker is clicked. We'll only allow
       // one infowindow which will open at the marker that is clicked, and populate based
