@@ -111,7 +111,7 @@
       } //.conditional
     }); //.filteredLocation
  
-
+ //showMarkers(this.filteredLocation);
   }; //end view
 
   // *******************************
@@ -125,12 +125,16 @@
     };
     map= new google.maps.Map(document.getElementById("map"), mapOptions);
 
-//showMarkers(initialLocation,map)
+showMarkers(initialLocation);
   }
 
-  function showMarkers(locations , map){
+  function showMarkers(locations){
+
+   //locations = ko.observableArray([]);
+
         var markers=[];
  var bounds = new google.maps.LatLngBounds();
+        var largeInfowindow = new google.maps.InfoWindow();
 
         // The following group uses the location array to create an array of markers on initialize.
         for (var i = 0; i < locations.length; i++) {
@@ -155,6 +159,22 @@
           bounds.extend(markers[i].position);
         }
   }
+
+        // This function populates the infowindow when the marker is clicked. We'll only allow
+      // one infowindow which will open at the marker that is clicked, and populate based
+      // on that markers position.
+      function populateInfoWindow(marker, infowindow) {
+        // Check to make sure the infowindow is not already opened on this marker.
+        if (infowindow.marker != marker) {
+          infowindow.marker = marker;
+          infowindow.setContent('<div>' + marker.title + '</div>');
+          infowindow.open(map, marker);
+          // Make sure the marker property is cleared if the infowindow is closed.
+          infowindow.addListener('closeclick',function(){
+            infowindow.setMarker = null;
+          });
+        }
+      }
   // get location data from foursquare
  /*function fetchForsquare(allthis.filteredLocation, map, markers) {
     var locationDataArr = [];
@@ -203,38 +223,7 @@
     }
   }*/
 
-  // place marker for the result initialLocation on the map
- /*function placeMarkers(allLocations, place, data, map, markers) {
-    var latlng = new google.maps.LatLng(data.lat, data.lng);
-    var marker = new google.maps.Marker({
-      position: latlng,
-      map: map,
-      animation: google.maps.Animation.DROP,
-      content: data.name + "<br>" + data.loc
-    });
-
-    // create infoWindow for each marker on the map
-    var infoWindow = new google.maps.InfoWindow({
-      content: marker.content
-    });
-    marker.infowindow = infoWindow;
-    markers.push(marker);
-    allLocations()[allLocations().length - 1].marker = marker;
-
-    // show details info about location when user clicks on a marker
-    google.maps.event.addListener(marker, "click", function() {
-      // close the open infowindow
-      for (var i = 0; i < markers().length; i++) {
-        markers()[i].infowindow.close();
-      }
-      infoWindow.open(map, marker);
-    });
-
-    // toggle bounce when user clicks on a location marker on google map
-    google.maps.event.addListener(marker, "click", function() {
-      toggleBounce(marker);
-    });
-  } */
+  
 
   // *******************************
   // *      ERROR Handling         *
