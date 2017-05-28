@@ -112,9 +112,8 @@
         });
       } //.conditional
     }); //.filteredLocation
-   console.log(this.selectedCategory.length);
+  
 
- //showMarkers(this.filteredLocation);
   }; //end view
 
   // *******************************
@@ -127,7 +126,7 @@
       zoom: 16
     };
     map= new google.maps.Map(document.getElementById("map"), mapOptions);
-
+showMarkers(initialLocation);
 
   }
 
