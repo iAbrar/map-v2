@@ -1,5 +1,6 @@
  
   // Create marker for the location "Model"
+  var map;
   var initialLocation = [
     {
       name: "Nino",
@@ -48,6 +49,7 @@
     this.LatLng = ko.observable(data.LatLng);
     this.category = ko.observable(data.category);
     this.visible = ko.observable(true);
+
   };
   
 
@@ -59,15 +61,15 @@
   // *******************************
   var ViewModel = function() {
     var self = this;
- // var map = initialize(); // end googleMap
+   
         // if google map is not displaying, alert the user
-      if (!map) {
+   /*   if (!map) {
         alert("Currently Google Maps is not available. Please try again later!");
         return;
-      }  
+      }  */
       
-    self.markers = ko.observableArray([]);
-    self.allLocations = ko.observableArray([]);
+   // self.markers = ko.observableArray([]);
+    //self.allLocations = ko.observableArray([]);
 
  //  self.map = ko.observable(map);
   //  fetchForsquare(self.allLocations, self.map, self.markers);
@@ -80,8 +82,10 @@
     // dynamically retrieve categories to
     // create drop down list later
     initialLocation.map(location => {
-      if (!this.categoryList.includes(location.category))
+      if (!this.categoryList.includes(location.category)){
+        location.visible=true;
         this.categoryList.push(location.category);
+      }
     });
 
     this.locationsArray = ko.observableArray(initialLocation);
@@ -106,8 +110,8 @@
         });
       } //.conditional
     }); //.filteredLocation
+ 
 
-    // add marker to the list
   }; //end view
 
   // *******************************
@@ -117,12 +121,39 @@
     // Constructor creates a new map - only center and zoom are required.
     var mapOptions = {
       center: new google.maps.LatLng(24.697285134978586, 46.685779094696045),
-      zoom: 12
+      zoom: 16
     };
-    return new google.maps.Map(document.getElementById("map"), mapOptions);
+    map= new google.maps.Map(document.getElementById("map"), mapOptions);
+
+
+    var markers=[];
+ var bounds = new google.maps.LatLngBounds();
+
+        // The following group uses the location array to create an array of markers on initialize.
+        for (var i = 0; i < initialLocation.length; i++) {
+          // Get the position from the location array.
+          var position = initialLocation[i].LatLng;
+          var title = initialLocation[i].name;
+      
+          // Create a marker per location, and put into markers array.
+          var marker = new google.maps.Marker({
+            map: map,
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            id: i
+          });
+          // Push the marker to our array of markers.
+          markers.push(marker);
+          // Create an onclick event to open an infowindow at each marker.
+          marker.addListener('click', function() {
+            populateInfoWindow(this, largeInfowindow);
+          });
+          bounds.extend(markers[i].position);
+        }
   }
   // get location data from foursquare
- function fetchForsquare(allLocations, map, markers) {
+ /*function fetchForsquare(allthis.filteredLocation, map, markers) {
     var locationDataArr = [];
     var foursquareUrl = "";
     var location = [];
@@ -144,7 +175,7 @@
       $.getJSON(foursquareUrl, function(data) {
         if (data.response.venues) {
           var item = data.response.venues[0];
-          allLocations.push(item);
+          allthis.filteredLocation.push(item);
           location = {
             lat: item.location.lat,
             lng: item.location.lng,
@@ -158,7 +189,7 @@
               item.location.postalCode
           };
           locationDataArr.push(location);
-          placeMarkers(allLocations, place, location, map, markers);
+          placeMarkers(allinitialLocation, place, location, map, markers);
         } else {
           alert(
             "Something went wrong, Could not retreive data from foursquare. Please try again!"
@@ -167,10 +198,10 @@
         }
       });
     }
-  }
+  }*/
 
-  // place marker for the result locations on the map
- function placeMarkers(allLocations, place, data, map, markers) {
+  // place marker for the result initialLocation on the map
+ /*function placeMarkers(allLocations, place, data, map, markers) {
     var latlng = new google.maps.LatLng(data.lat, data.lng);
     var marker = new google.maps.Marker({
       position: latlng,
@@ -200,7 +231,7 @@
     google.maps.event.addListener(marker, "click", function() {
       toggleBounce(marker);
     });
-  } 
+  } */
 
   // *******************************
   // *      ERROR Handling         *
@@ -212,4 +243,4 @@
     );
   }*/
 ko.applyBindings(new ViewModel());
-google.maps.event.addDomListener(window, 'load', initialize);
+google.maps.event.addDomListener(window, 'load', map);
