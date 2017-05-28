@@ -125,15 +125,18 @@
     };
     map= new google.maps.Map(document.getElementById("map"), mapOptions);
 
+//showMarkers(initialLocation,map)
+  }
 
-    var markers=[];
+  function showMarkers(locations , map){
+        var markers=[];
  var bounds = new google.maps.LatLngBounds();
 
         // The following group uses the location array to create an array of markers on initialize.
-        for (var i = 0; i < initialLocation.length; i++) {
+        for (var i = 0; i < locations.length; i++) {
           // Get the position from the location array.
-          var position = initialLocation[i].LatLng;
-          var title = initialLocation[i].name;
+          var position = locations[i].LatLng;
+          var title = locations[i].name;
       
           // Create a marker per location, and put into markers array.
           var marker = new google.maps.Marker({
