@@ -50,6 +50,8 @@
     this.category = ko.observable(data.category);
     this.visible = ko.observable(true);
 
+
+
   };
   
 
@@ -83,7 +85,6 @@
     // create drop down list later
     initialLocation.map(location => {
       if (!this.categoryList.includes(location.category)){
-        location.visible=true;
         this.categoryList.push(location.category);
       }
     });
@@ -106,11 +107,13 @@
       } else {
         // input found, match location category to filter
         return ko.utils.arrayFilter(this.locationsArray(), location => {
+
           return location.category === this.selectedCategory();
         });
       } //.conditional
     }); //.filteredLocation
- 
+   console.log(this.selectedCategory.length);
+
  //showMarkers(this.filteredLocation);
   }; //end view
 
@@ -125,7 +128,7 @@
     };
     map= new google.maps.Map(document.getElementById("map"), mapOptions);
 
-showMarkers(initialLocation);
+
   }
 
   function showMarkers(locations){
