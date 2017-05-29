@@ -1,7 +1,6 @@
  
   // Create marker for the location "Model"
   var map;
-
   var initialLocation = [
     {
       name: "Nino",
@@ -115,6 +114,8 @@
      
     }); //.filteredLocation
  
+ this.abrar=this.filteredLocation;
+   console.log(this.abrar());
   }; //end view
 
   // *******************************
@@ -127,47 +128,55 @@
       zoom: 16
     };
     map= new google.maps.Map(document.getElementById("map"), mapOptions);
- console.log(initialLocation);
-    for (var i = 0; i < initialLocation.length; i++) {
-     
-      addMarker(initialLocation[i]);
-    }
-
+//showMarkers(initialLocation);
 
   }
 
-function addMarker(location) {
-  console.log('hi');
-  var gmarkers1 = [];
-var markers1 = [];
-var infowindow = new google.maps.InfoWindow({
-    content: ''
-});
-    var category = location.category;
-    var title = location.name;
-    var pos = new google.maps.LatLng(location.lat, location.log);
-    var content = "Hello";
+function showMarkers(locations){
 
-    marker = new google.maps.Marker({
-        title: title,
-        position: pos,
-        category: category,
-        map: map
-    });
+   //locations = ko.observableArray([]);
 
-    gmarkers1.push(marker);
+        var markers=[];
+ var bounds = new google.maps.LatLngBounds();
+        var largeInfowindow = new google.maps.InfoWindow();
+ // Style the markers a bit. This will be our listing marker icon.
+        var defaultIcon = makeMarkerIcon('0091ff');
 
-    // Marker click listener
-    google.maps.event.addListener(marker, 'click', (function (marker, content) {
-        return function () {
-            console.log('Gmarker 1 gets pushed');
-            infowindow.setContent(content);
-            infowindow.open(map, marker);
-            map.panTo(this.getPosition());
-            map.setZoom(15);
+        // Create a "highlighted location" marker color for when the user
+        // mouses over the marker.
+        var highlightedIcon = makeMarkerIcon('FFFF24');
+
+        // The following group uses the location array to create an array of markers on initialize.
+        for (var i = 0; i < locations.length; i++) {
+          // Get the position from the location array.
+          var position = locations[i].LatLng;
+          var title = locations[i].name;
+      
+          // Create a marker per location, and put into markers array.
+          var marker = new google.maps.Marker({
+            map: map,
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            id: i
+          });
+          // Push the marker to our array of markers.
+          markers.push(marker);
+          // Create an onclick event to open an infowindow at each marker.
+          marker.addListener('click', function() {
+            populateInfoWindow(this, largeInfowindow);
+          });
+          bounds.extend(markers[i].position);
+            // Two event listeners - one for mouseover, one for mouseout,
+          // to change the colors back and forth.
+          marker.addListener('mouseover', function() {
+            this.setIcon(highlightedIcon);
+          });
+          marker.addListener('mouseout', function() {
+            this.setIcon(defaultIcon);
+          });
         }
-    })(marker, content));
-}
+  }
 
   // icon of that color. The icon will be 21 px wide by 34 high, have an origin
       // of 0, 0 and be anchored at 10, 34).
