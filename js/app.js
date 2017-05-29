@@ -1,269 +1,278 @@
- 
-  // Create marker for the location "Model"
-  var map;
-  var initialLocation = [
-    {
-      name: "Nino",
-      LatLng: { lat: 24.698162, lng: 46.686809 },
-      category: "Restaurant"
-    },
-    {
-      name: "Centria Mall",
-      LatLng: { lat: 24.697509, lng: 46.683966 },
-      category: "Shopping"
-    },
-    {
-      name: "Al Faisaliah Mall",
-      LatLng: { lat: 24.689536, lng: 46.685833 },
-      category: "Shopping"
-    },
-    {
-      name: "Café Bateel",
-      LatLng: { lat: 24.699741, lng: 46.690741 },
-      category: "Cafe"
-    },
-    {
-      name: "Diamond Restaurant",
-      LatLng: { lat: 24.699542, lng: 46.692356 },
-      category: "Restaurant"
-    },
-    {
-      name: "Tim Hortons",
-      LatLng: { lat: 24.69866, lng: 46.689851 },
-      category: "Cafe"
-    },
-    {
-      name: "Bab Al-Yemen Restaurant",
-      LatLng: { lat: 24.693966, lng: 46.678768 },
-      category: "Restaurant"
-    },
-    {
-      name: "Panorama Mall",
-      LatLng: { lat: 24.692129, lng: 46.670512 },
-      category: "Shopping"
-    }
-  ];
-  // create Location class
-  var Location = function(data) {
-    this.name = ko.observable(data.name);
-    this.LatLng = ko.observable(data.LatLng);
-    this.category = ko.observable(data.category);
-    this.visible = ko.observable(true);
+ // Create marker for the location "Model"
+ var map;
+ var initialLocation = [{
+         name: "Nino",
+         LatLng: {
+             lat: 24.698162,
+             lng: 46.686809
+         },
+         category: "Restaurant"
+     },
+     {
+         name: "Centria Mall",
+         LatLng: {
+             lat: 24.697509,
+             lng: 46.683966
+         },
+         category: "Shopping"
+     },
+     {
+         name: "Al Faisaliah Mall",
+         LatLng: {
+             lat: 24.689536,
+             lng: 46.685833
+         },
+         category: "Shopping"
+     },
+     {
+         name: "Café Bateel",
+         LatLng: {
+             lat: 24.699741,
+             lng: 46.690741
+         },
+         category: "Cafe"
+     },
+     {
+         name: "Diamond Restaurant",
+         LatLng: {
+             lat: 24.699542,
+             lng: 46.692356
+         },
+         category: "Restaurant"
+     },
+     {
+         name: "Tim Hortons",
+         LatLng: {
+             lat: 24.69866,
+             lng: 46.689851
+         },
+         category: "Cafe"
+     },
+     {
+         name: "Bab Al-Yemen Restaurant",
+         LatLng: {
+             lat: 24.693966,
+             lng: 46.678768
+         },
+         category: "Restaurant"
+     },
+     {
+         name: "Panorama Mall",
+         LatLng: {
+             lat: 24.692129,
+             lng: 46.670512
+         },
+         category: "Shopping"
+     }
+ ];
+ // create Location class
+ var Location = function(data) {
+     this.name = ko.observable(data.name);
+     this.LatLng = ko.observable(data.LatLng);
+     this.category = ko.observable(data.category);
+     this.visible = ko.observable(true);
 
 
 
-  };
-  
+ };
 
 
-  
-  // the viewModel
-  // *******************************
-  // *          VIEW MODEL         *
-  // *******************************
-  var ViewModel = function() {
-    var self = this;
-   
-        // if google map is not displaying, alert the user
-   /*   if (!map) {
-        alert("Currently Google Maps is not available. Please try again later!");
-        return;
-      }  */
-      
-   // self.markers = ko.observableArray([]);
-    //self.allLocations = ko.observableArray([]);
 
- //  self.map = ko.observable(map);
-  //  fetchForsquare(self.allLocations, self.map, self.markers);
 
-    // *******************************
-    // *      SELECTED CATEGORY         *
-    // *******************************
-    this.categoryList = [];
+ // the viewModel
+ // *******************************
+ // *          VIEW MODEL         *
+ // *******************************
+ var ViewModel = function() {
+     var self = this;
 
-    // dynamically retrieve categories to
-    // create drop down list later
-    initialLocation.map(location => {
-      if (!this.categoryList.includes(location.category)){
-        this.categoryList.push(location.category);
-      }
-    });
+     //  fetchForsquare(self.allLocations, self.map, self.markers);
 
-    this.locationsArray = ko.observableArray(initialLocation);
+     // *******************************
+     // *      SELECTED CATEGORY         *
+     // *******************************
+     this.categoryList = [];
 
-    // Observable Array for drop down list
-    this.categories = ko.observableArray(this.categoryList);
-    // This will hold the selected value from drop down menu
-    this.selectedCategory = ko.observable();
+     // dynamically retrieve categories to
+     // create drop down list later
+     initialLocation.map(location => {
+         if (!this.categoryList.includes(location.category)) {
+             this.categoryList.push(location.category);
+         }
+     });
 
-    /**
-       * Filter function, return filtered location by
-       * selected category from <select>
-       */
-    this.filteredLocation = ko.computed(() => {
-      if (!this.selectedCategory()) {
-        // No input found, return all location
-        return this.locationsArray();
-      } else {
-        // input found, match location category to filter
-        return ko.utils.arrayFilter(this.locationsArray(), location => {
+     this.locationsArray = ko.observableArray(initialLocation);
 
-          return location.category === this.selectedCategory();
-        });
-      } //.conditional
-     
-    }); //.filteredLocation
- 
- this.abrar=this.filteredLocation;
-   console.log(this.abrar());
-  }; //end view
+     // Observable Array for drop down list
+     this.categories = ko.observableArray(this.categoryList);
+     // This will hold the selected value from drop down menu
+     this.selectedCategory = ko.observable();
 
-  // *******************************
-  // *        FUNCTIONS            *
-  // *******************************
-  function initialize() {
-    // Constructor creates a new map - only center and zoom are required.
-    var mapOptions = {
-      center: new google.maps.LatLng(24.697285134978586, 46.685779094696045),
-      zoom: 16
-    };
-    map= new google.maps.Map(document.getElementById("map"), mapOptions);
-//showMarkers(initialLocation);
+     /**
+      * Filter function, return filtered location by
+      * selected category from <select>
+      */
+     this.filteredLocation = ko.computed(() => {
+         if (!self.selectedCategory()) {
 
-  }
+             self.locationsArray().forEach(function(location) {
+                 if (location.marker) {
+                     console.log(self.locationsArray());
+                     location.marker.setVisible(true);
+                 }
 
-function showMarkers(locations){
+             });
+             // No input found, return all location
+             return self.locationsArray();
 
-   //locations = ko.observableArray([]);
+         } else {
+             // input found, match location category to filter
+             return ko.utils.arrayFilter(self.locationsArray(), location => {
 
-        var markers=[];
- var bounds = new google.maps.LatLngBounds();
-        var largeInfowindow = new google.maps.InfoWindow();
- // Style the markers a bit. This will be our listing marker icon.
-        var defaultIcon = makeMarkerIcon('0091ff');
+                 // select all location in the same category 
 
-        // Create a "highlighted location" marker color for when the user
-        // mouses over the marker.
-        var highlightedIcon = makeMarkerIcon('FFFF24');
+                 var match = location.category === this.selectedCategory(); // return true or false 
+                 location.marker.setVisible(match);
+                 return match;
+             });
+         } //.conditional
+     }); //.filteredLocation
 
-        // The following group uses the location array to create an array of markers on initialize.
-        for (var i = 0; i < locations.length; i++) {
-          // Get the position from the location array.
-          var position = locations[i].LatLng;
-          var title = locations[i].name;
-      
-          // Create a marker per location, and put into markers array.
-          var marker = new google.maps.Marker({
-            map: map,
-            position: position,
-            title: title,
-            animation: google.maps.Animation.DROP,
-            id: i
-          });
-          // Push the marker to our array of markers.
-          markers.push(marker);
-          // Create an onclick event to open an infowindow at each marker.
-          marker.addListener('click', function() {
-            populateInfoWindow(this, largeInfowindow);
-          });
-          bounds.extend(markers[i].position);
-            // Two event listeners - one for mouseover, one for mouseout,
-          // to change the colors back and forth.
-          marker.addListener('mouseover', function() {
-            this.setIcon(highlightedIcon);
-          });
-          marker.addListener('mouseout', function() {
-            this.setIcon(defaultIcon);
-          });
-        }
-  }
+     this.clickEventHandler = function(location) {
+         //google.maps.event.trigger() method
+         // location.marker, "click"
+         google.maps.event.trigger(location.marker, 'click');
+         map.setZoom(16);
+         map.setCenter(location.marker.getPosition());
 
-  // icon of that color. The icon will be 21 px wide by 34 high, have an origin
-      // of 0, 0 and be anchored at 10, 34).
-      function makeMarkerIcon(markerColor) {
-        var markerImage = new google.maps.MarkerImage(
-          'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-          '|40|_|%E2%80%A2',
-          new google.maps.Size(21, 34),
-          new google.maps.Point(0, 0),
-          new google.maps.Point(10, 34),
-          new google.maps.Size(21,34));
-        return markerImage;
-      }
+     }; // end clickEventHandler
 
-        // This function populates the infowindow when the marker is clicked. We'll only allow
-      // one infowindow which will open at the marker that is clicked, and populate based
-      // on that markers position.
-      function populateInfoWindow(marker, infowindow) {
-        // Check to make sure the infowindow is not already opened on this marker.
-        if (infowindow.marker != marker) {
-          infowindow.marker = marker;
-          infowindow.setContent('<div>' + marker.title + '</div>');
-          infowindow.open(map, marker);
-          // Make sure the marker property is cleared if the infowindow is closed.
-          infowindow.addListener('closeclick',function(){
-            infowindow.setMarker = null;
-          });
-        }
-      }
-  // get location data from foursquare
- /*function fetchForsquare(allthis.filteredLocation, map, markers) {
-    var locationDataArr = [];
-    var foursquareUrl = "";
-    var location = [];
-    for (var place in Model) {
-      foursquareUrl =
-        "https://api.foursquare.com/v2/venues/search" +
-        "?client_id=2BIWS0KFSP1W12ARXFHNA20WHNGY0NMOAD3AFYM1ZGCFCF32" +
-        "&client_secret=I2F4TTJ0HJOIAO2GCPP0T2NJBMMHFVMCLAQ4HIHF5U1JZCNG" +
-        "&v=20130815" +
-        "&m=foursquare" +
-        "&ll=" +
-        Model[place]["latlng"][0] +
-        "," +
-        Model[place]["latlng"][1] +
-        "&query=" +
-        Model[place]["name"] +
-        "&intent=match";
+     // get location data from foursquare
+     /*this.fetchForsquare= function(allthis.filteredLocation, map, markers) {
+         var locationDataArr = [];
+         var foursquareUrl = "";
+         var location = [];
+         for (var place in Model) {
+           foursquareUrl =
+             "https://api.foursquare.com/v2/venues/search" +
+             "?client_id=2BIWS0KFSP1W12ARXFHNA20WHNGY0NMOAD3AFYM1ZGCFCF32" +
+             "&client_secret=I2F4TTJ0HJOIAO2GCPP0T2NJBMMHFVMCLAQ4HIHF5U1JZCNG" +
+             "&v=20130815" +
+             "&m=foursquare" +
+             "&ll=" +
+             Model[place]["latlng"][0] +
+             "," +
+             Model[place]["latlng"][1] +
+             "&query=" +
+             Model[place]["name"] +
+             "&intent=match";
 
-      $.getJSON(foursquareUrl, function(data) {
-        if (data.response.venues) {
-          var item = data.response.venues[0];
-          allthis.filteredLocation.push(item);
-          location = {
-            lat: item.location.lat,
-            lng: item.location.lng,
-            name: item.name,
-            loc: item.location.address +
-              " " +
-              item.location.city +
-              ", " +
-              item.location.state +
-              " " +
-              item.location.postalCode
-          };
-          locationDataArr.push(location);
-          placeMarkers(allinitialLocation, place, location, map, markers);
-        } else {
-          alert(
-            "Something went wrong, Could not retreive data from foursquare. Please try again!"
-          );
-          return;
-        }
-      });
-    }
-  }*/
+           $.getJSON(foursquareUrl, function(data) {
+             if (data.response.venues) {
+               var item = data.response.venues[0];
+               allthis.filteredLocation.push(item);
+               location = {
+                 lat: item.location.lat,
+                 lng: item.location.lng,
+                 name: item.name,
+                 loc: item.location.address +
+                   " " +
+                   item.location.city +
+                   ", " +
+                   item.location.state +
+                   " " +
+                   item.location.postalCode
+               };
+               locationDataArr.push(location);
+               placeMarkers(allinitialLocation, place, location, map, markers);
+             } else {
+               alert(
+                 "Something went wrong, Could not retreive data from foursquare. Please try again!"
+               );
+               return;
+             }
+           });
+         }
+       }// forsequare
+     */
 
-  
+ }; //end view
 
-  // *******************************
-  // *      ERROR Handling         *
-  // *******************************
+ // *******************************
+ // *        FUNCTIONS            *
+ // *******************************
+ function initialize() {
+     // Constructor creates a new map - only center and zoom are required.
+     var mapOptions = {
+         center: new google.maps.LatLng(24.697285134978586, 46.685779094696045),
+         zoom: 12
+     };
+     map = new google.maps.Map(document.getElementById("map"), mapOptions);
+     showMarkers(initialLocation);
 
- /* function ErrorHandling() {
-    alert(
-      "Google Maps has failed to load. Please check your internet connection and try again."
-    );
-  }*/
-ko.applyBindings(new ViewModel());
-google.maps.event.addDomListener(window, 'load', map);
+ }
+
+ function showMarkers(locations) {
+
+     //locations = ko.observableArray([]);
+
+     var markers = [];
+     var bounds = new google.maps.LatLngBounds();
+     var largeInfowindow = new google.maps.InfoWindow();
+
+     // The following group uses the location array to create an array of markers on initialize.
+     for (var i = 0; i < locations.length; i++) {
+         // Get the position from the location array.
+         var position = locations[i].LatLng;
+         var title = locations[i].name;
+
+         // Create a marker per location, and put into markers array.
+         var marker = new google.maps.Marker({
+             map: map,
+             position: position,
+             title: title,
+             animation: google.maps.Animation.DROP,
+             id: i
+         });
+         // Push the marker to our array of markers.
+         markers.push(marker);
+
+         vm.locationsArray()[i].marker = marker;
+         // Create an onclick event to open an infowindow at each marker.
+         marker.addListener('click', function() {
+             populateInfoWindow(this, largeInfowindow);
+         });
+         bounds.extend(markers[i].position);
+     }
+ }
+
+ // This function populates the infowindow when the marker is clicked. We'll only allow
+ // one infowindow which will open at the marker that is clicked, and populate based
+ // on that markers position.
+ function populateInfoWindow(marker, infowindow) {
+     // Check to make sure the infowindow is not already opened on this marker.
+     if (infowindow.marker != marker) {
+         infowindow.marker = marker;
+         infowindow.setContent('<div>' + marker.title + '</div>');
+         infowindow.open(map, marker);
+         // Make sure the marker property is cleared if the infowindow is closed.
+         infowindow.addListener('closeclick', function() {
+             infowindow.setMarker = null;
+         });
+     }
+ }
+
+
+
+ // *******************************
+ // *      ERROR Handling         *
+ // *******************************
+
+ function ErrorHandling() {
+     alert(
+         "Google Maps has failed to load. Please check your internet connection and try again."
+     );
+ }
+
+ var vm = new ViewModel();
+ ko.applyBindings(vm);
