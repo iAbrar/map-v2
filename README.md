@@ -20,5 +20,7 @@ This project is part of :
 3. Click on map's icons 
 
 ### Resourses I used them:
-1. 
-2. 
+1. Font Awesome  [click here ](http://fontawesome.io/)
+2. Find Latitude and Longitude [click here ](http://www.findlatitudeandlongitude.com/)
+3. Javascript Beautifier [ click here ](http://www.danstools.com/javascript-beautify/)
+4. CSS Validation Service [click here ](http://jigsaw.w3.org/css-validator/)
