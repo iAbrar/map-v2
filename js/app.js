@@ -77,8 +77,9 @@
 
 //foursquare api credentials
   function loaddata (location){
-	console.log("location lat");
-	 console.log("location" + location);
+	//console.log("location lat");
+	// console.log("location" + location);
+	  alert("Hello here we are !");
 	var latlng = location.LatLng;
 	var client_id = 'JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF';
 	var client_secret = 'ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D';
@@ -103,7 +104,7 @@
 	} else {
 		location.name = total.name;
 	}
-	console.log(location.name);
+	//console.log(location.name);
 	
 		
 	    var infowindow = new google.maps.InfoWindow();
