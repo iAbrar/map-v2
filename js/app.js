@@ -91,110 +91,64 @@
      // *******************************
      // *      SELECTED CATEGORY         *
      // *******************************
-     this.categoryList = [];
+     self.categoryList = [];
 
      // dynamically retrieve categories to
      // create drop down list later
      initialLocation.map(location => {
-         if (!this.categoryList.includes(location.category)) {
-             this.categoryList.push(location.category);
+         if (!self.categoryList.includes(location.category)) {
+             self.categoryList.push(location.category);
          }
      });
 
-     this.locationsArray = ko.observableArray(initialLocation);
+     self.locationsArray = ko.observableArray(initialLocation);
 
      // Observable Array for drop down list
-     this.categories = ko.observableArray(this.categoryList);
-     // This will hold the selected value from drop down menu
-     this.selectedCategory = ko.observable();
+     self.categories = ko.observableArray(self.categoryList);
+     // self will hold the selected value from drop down menu
+     self.selectedCategory = ko.observable();
 
      /**
       * Filter function, return filtered location by
       * selected category from <select>
       */
-     this.filteredLocation = ko.computed(() => {
+     self.filteredLocation = ko.computed(() => {
          if (!self.selectedCategory()) {
 
              self.locationsArray().forEach(function(location) {
                  if (location.marker) {
-                     console.log(self.locationsArray());
                      location.marker.setVisible(true);
                  }
 
              });
              // No input found, return all location
+
              return self.locationsArray();
 
          } else {
+          
              // input found, match location category to filter
              return ko.utils.arrayFilter(self.locationsArray(), location => {
 
                  // select all location in the same category 
 
-                 var match = location.category === this.selectedCategory(); // return true or false 
+                 var match = location.category === self.selectedCategory(); // return true or false 
                  location.marker.setVisible(match);
                  return match;
              });
          } //.conditional
      }); //.filteredLocation
 
-     this.clickEventHandler = function(location) {
+     self.showLocation = function(location) {
          //google.maps.event.trigger() method
          // location.marker, "click"
-         google.maps.event.trigger(location.marker, 'click');
-         map.setZoom(16);
-         map.setCenter(location.marker.getPosition());
+        map.setZoom(16);
+        map.setCenter(location.marker.getPosition());
+        google.maps.event.trigger(location.marker, 'click');
+      
 
-     }; // end clickEventHandler
+     }; // end showLocation
 
-     // get location data from foursquare
-     /*this.fetchForsquare= function(allthis.filteredLocation, map, markers) {
-         var locationDataArr = [];
-         var foursquareUrl = "";
-         var location = [];
-         for (var place in Model) {
-           foursquareUrl =
-             "https://api.foursquare.com/v2/venues/search" +
-             "?client_id=2BIWS0KFSP1W12ARXFHNA20WHNGY0NMOAD3AFYM1ZGCFCF32" +
-             "&client_secret=I2F4TTJ0HJOIAO2GCPP0T2NJBMMHFVMCLAQ4HIHF5U1JZCNG" +
-             "&v=20130815" +
-             "&m=foursquare" +
-             "&ll=" +
-             Model[place]["latlng"][0] +
-             "," +
-             Model[place]["latlng"][1] +
-             "&query=" +
-             Model[place]["name"] +
-             "&intent=match";
-
-           $.getJSON(foursquareUrl, function(data) {
-             if (data.response.venues) {
-               var item = data.response.venues[0];
-               allthis.filteredLocation.push(item);
-               location = {
-                 lat: item.location.lat,
-                 lng: item.location.lng,
-                 name: item.name,
-                 loc: item.location.address +
-                   " " +
-                   item.location.city +
-                   ", " +
-                   item.location.state +
-                   " " +
-                   item.location.postalCode
-               };
-               locationDataArr.push(location);
-               placeMarkers(allinitialLocation, place, location, map, markers);
-             } else {
-               alert(
-                 "Something went wrong, Could not retreive data from foursquare. Please try again!"
-               );
-               return;
-             }
-           });
-         }
-       }// forsequare
-     */
 
  }; //end view
 
