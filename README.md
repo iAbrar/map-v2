@@ -19,6 +19,13 @@ This project is part of :
 2. Open index.html file 
 3. Click on map's icons 
 
+###Main tools used:
+* Google Maps API
+* Foursquare API
+* Knockout JS
+* jQuery
+
+
 ### Resourses I used them:
 1. Font Awesome  [click here ](http://fontawesome.io/)
 2. Find Latitude and Longitude [click here ](http://www.findlatitudeandlongitude.com/)
