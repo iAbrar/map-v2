@@ -133,7 +133,7 @@ var ViewModel = function() {
     }); //.filteredLocation
 
     self.showLocation = function(location) {
-   
+        // console.log(location);
         //google.maps.event.trigger() method
         // location.marker, "click"
         map.setZoom(16);
@@ -152,6 +152,10 @@ var ViewModel = function() {
                 })
                 .done(function(data) {
                     var venue = data.response.venues[0];
+
+                    //set fetched info as properties of location object
+                    location.id = ko.observable(venue.id);
+
 
                     // use id to get photo
                     $.ajax({
