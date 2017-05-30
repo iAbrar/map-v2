@@ -231,10 +231,10 @@ var loaddata = function(location){
          vm.locationsArray()[i].marker = marker;
           marker.addListener('click', function() {
 			  var mark = this;
-			  loaddata(marker);
+			  loaddata(mark);
 			 //  toggleBounce(this);
             setTimeout(function() {
-                marker.setAnimation(null);
+                mark.setAnimation(null);
             }, 1000);
             populateInfoWindow(this, largeInfowindow);
           });
