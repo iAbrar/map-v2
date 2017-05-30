@@ -75,12 +75,47 @@
 
 
 //foursquare api credentials
-var four_squareApi = {
-    ID: 'JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF',
-    SECRET: 'ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D'
-};
 
-
+var loaddata = function(location){
+	console.log(location.position.lat());
+	 console.log(location);
+	var latlng = location.LatLng;
+	var client_id = 'JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF';
+	var client_secret = 'ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D';
+	$.ajax({
+		url: 'https://api.foursquare.com/v2/venues/search',
+		dataType: 'json',
+		data: {
+			limit: '1',
+			ll: latlng,
+			client_id: client_id,
+			client_secret: client_secret,
+			name: 'name',
+			v: '20130815'
+		},
+	async:true
+	}).success(function(data){
+		debugger;
+	var total = data.response.venues[0];
+	location.name = total.name;
+	if(location.name !== undefined){
+		location.name = 'name not found!!';
+	} else {
+		location.name = total.name;
+	}
+	console.log(location.name);
+	
+		
+	    var infowindow = new google.maps.InfoWindow();
+		
+		
+        infowindow.setContent('<h5>' + location.name + '</h5>');
+		infowindow.open(map, location.marker);
+}).fail(function(error){
+	alert('failed to get fooursquare data');
+});
+ 
+ 
  // the viewModel
  // *******************************
  // *          VIEW MODEL         *
