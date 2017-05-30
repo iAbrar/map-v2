@@ -10,7 +10,7 @@ This project is part of :
 
 #### Online:
 
-1. Click here to try it out:[live demo](https://iabrar.github.io/map-v2/)
+1. Click here to try it out:  [ Live demo](https://iabrar.github.io/map-v2/)
 2. Click on any of the places on the map / sidebar for more information
 
 #### Locally: 
