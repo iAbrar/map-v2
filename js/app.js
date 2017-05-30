@@ -71,12 +71,14 @@
      this.LatLng = ko.observable(data.LatLng);
      this.category = ko.observable(data.category);
      this.visible = ko.observable(true);
-
-
-
  };
 
 
+//foursquare api credentials
+var four_squareApi = {
+    ID: 'JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF',
+    SECRET: 'ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D'
+};
 
 
  // the viewModel
