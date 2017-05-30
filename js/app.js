@@ -77,8 +77,8 @@
 
 //foursquare api credentials
   function loaddata (location){
-	console.log(location.position.lat());
-	 console.log(location);
+	console.log("location lat"+ location.LatLng);
+	 console.log("location" + location);
 	var latlng = location.LatLng;
 	var client_id = 'JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF';
 	var client_secret = 'ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D';
