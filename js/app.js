@@ -1,5 +1,6 @@
 
- // Create marker for the location "Model"
+"use strict";
+
  var map;
  var initialLocation = [{
          name: "Nino",
