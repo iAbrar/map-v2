@@ -2,15 +2,7 @@
 "use strict";
 
  var map;
-  var lat = "";
-  var lng = "";
-  var appendeddatahtml = "";
-  var str = "";
-  var newstr = "";
-  var phone = "";
-  var rating = "";
-  var icon = "";
-  var address = "";
+  var largeInfowindow;
 
 
  var initialLocation = [{
@@ -173,25 +165,19 @@ self.currentPlace = ko.observable();
 
         //set fetched info as properties of location object
         location.id = ko.observable(venue.id);
-//console.log(venue.id);
-        if (venue.hasOwnProperty('url')) {
-          location.url = ko.observable(venue.url);
-        }
-        if (venue.hasOwnProperty('contact') && venue.contact.hasOwnProperty('formattedPhone')) {
-          location.phone = ko.observable(venue.contact.formattedPhone);
-        }
+
 
         // use id to get photo
         $.ajax({
           url: 'https://api.foursquare.com/v2/venues/'+location.id()+'?oauth_token=R5YPRIGI1HFJXM15BEWHFGKPVIJBTXJOKK5BMODOQFZFB115&v=20170530'
         })
         .done(function(data){
-          console.log(data.response);
+         // console.log(data.response);
         //  console.log(data.response.venue.rating);
           // set first photo url as the location photo property
                   var result = data.response.venue.photos.groups["0"].items;
-                   var largeInfowindow = new google.maps.InfoWindow();
-
+                   largeInfowindow = new google.maps.InfoWindow();
+   
                             largeInfowindow.open(map, location.marker);
 
                            
@@ -201,7 +187,7 @@ self.currentPlace = ko.observable();
                                   +'<img class="sq" src="'
                                  + result[0].prefix + 'width200' + result[0].suffix + '"><h8> Website <a class="web-links" href="http://' + data.response.venue.url + 
                                     '" target="_blank">' + data.response.venue.url  + '</a>'+' </h8></div>');
-                         
+       
 self.scrollTo('#map');
          
          // location.initialized(true);
@@ -254,7 +240,7 @@ self.scrollTo('#map');
 
      var markers = [];
      var bounds = new google.maps.LatLngBounds();
-     var largeInfowindow = new google.maps.InfoWindow();
+    //  largeInfowindow = new google.maps.InfoWindow();
 
      // The following group uses the location array to create an array of markers on initialize.
      for (var i = 0; i < locations.length; i++) {
