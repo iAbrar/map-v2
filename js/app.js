@@ -229,12 +229,18 @@ var loaddata = function(location){
          markers.push(marker);
 
          vm.locationsArray()[i].marker = marker;
-         // Create an onclick event to open an infowindow at each marker.
-         marker.addListener('click', function() {
-             populateInfoWindow(this, largeInfowindow);
-         });
-         bounds.extend(markers[i].position);
+          marker.addListener('click', function() {
+			  var mark = this;
+			  loaddata(mark);
+			 //  toggleBounce(this);
+            setTimeout(function() {
+                mark.setAnimation(null);
+            }, 1000);
+            populateInfoWindow(this, largeInfowindow);
+          });
+          bounds.extend(markers[i].position);
      }
+	 
  }
 
  // This function populates the infowindow when the marker is clicked. We'll only allow
