@@ -1,13 +1,4 @@
-// Hello.
-//
-// This is JSHint, a tool that helps to detect errors and potential
-// problems in your JavaScript code.
-//
-// To start, simply enter some JavaScript anywhere on this page. Your
-// report will appear on the right side.
-//
-// Additionally, you can toggle specific options in the Configure
-// menu.
+
  // Create marker for the location "Model"
  var map;
  var initialLocation = [{
@@ -85,8 +76,7 @@
 
 
 //foursquare api credentials
-
-var loaddata = function(location){
+  function loaddata (location){
 	console.log(location.position.lat());
 	 console.log(location);
 	var latlng = location.LatLng;
@@ -125,7 +115,7 @@ var loaddata = function(location){
 	alert('failed to get fooursquare data');
 });
  
-};
+} // end load data 
  
  // the viewModel
  // *******************************
@@ -242,7 +232,7 @@ var loaddata = function(location){
          vm.locationsArray()[i].marker = marker;
           marker.addListener('click', function() {
 			  var mark = this;
-			  loaddata(mark);
+			  loaddata(locations[i]);
 			 //  toggleBounce(this);
             setTimeout(function() {
                 mark.setAnimation(null);
