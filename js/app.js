@@ -162,8 +162,7 @@ var ViewModel = function() {
                             url: 'https://api.foursquare.com/v2/venues/' + location.id() + '?oauth_token=R5YPRIGI1HFJXM15BEWHFGKPVIJBTXJOKK5BMODOQFZFB115&v=20170530'
                         })
                         .done(function(data) {
-                            // console.log(data.response); test 
-                         
+                          
                             // set first photo url as the location photo property
                             var result = data.response.venue.photos.groups["0"].items;
                             largeInfowindow = new google.maps.InfoWindow();
