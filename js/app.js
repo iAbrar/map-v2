@@ -2,6 +2,17 @@
 "use strict";
 
  var map;
+  var lat = "";
+  var lng = "";
+  var appendeddatahtml = "";
+  var str = "";
+  var newstr = "";
+  var phone = "";
+  var rating = "";
+  var icon = "";
+  var address = "";
+
+
  var initialLocation = [{
          name: "Nino",
          LatLng: {
@@ -35,10 +46,10 @@
          category: "Cafe"
      },
      {
-         name: "Diamond Restaurant",
+         name: "Shake Shack",
          LatLng: {
-             lat: 24.699542,
-             lng: 46.692356
+            lat: 24.699557576237797,
+            lng: 46.692240926033705
          },
          category: "Restaurant"
      },
@@ -76,48 +87,8 @@
  };
 
 
-//foursquare api credentials
-  function loaddata (location){
-	//console.log("location lat");
-	// console.log("location" + location);
-	  alert(location.LatLng());
-	var latlng = location.LatLng;
-	var client_id = 'JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF';
-	var client_secret = 'ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D';
-	$.ajax({
-		url: 'https://api.foursquare.com/v2/venues/search',
-		dataType: 'json',
-		data: {
-			limit: '1',
-			ll: latlng,
-			client_id: client_id,
-			client_secret: client_secret,
-			name: 'name',
-			v: '20130815'
-		},
-	async:true
-	}).success(function(data){
-		debugger;
-	var total = data.response.venues[0];
-	location.name = total.name;
-	if(location.name !== undefined){
-		location.name = 'name not found!!';
-	} else {
-		location.name = total.name;
-	}
-	//console.log(location.name);
-	
-		
-	    var infowindow = new google.maps.InfoWindow();
-		
-		
-        infowindow.setContent('<h5>' + location.name + '</h5>');
-		infowindow.open(map, location.marker);
-}).fail(function(error){
-	alert('failed to get fooursquare data');
-});
- 
-} // end load data 
+
+
  
  // the viewModel
  // *******************************
@@ -125,7 +96,7 @@
  // *******************************
  var ViewModel = function() {
      var self = this;
-
+self.currentPlace = ko.observable();
      //  fetchForsquare(self.allLocations, self.map, self.markers);
 
      // *******************************
@@ -166,7 +137,7 @@
              return self.locationsArray();
 
          } else {
-          
+
              // input found, match location category to filter
              return ko.utils.arrayFilter(self.locationsArray(), location => {
 
@@ -180,15 +151,86 @@
      }); //.filteredLocation
 
      self.showLocation = function(location) {
+     // console.log(location);
          //google.maps.event.trigger() method
          // location.marker, "click"
         map.setZoom(16);
         map.setCenter(location.marker.getPosition());
         google.maps.event.trigger(location.marker, 'click');
-      
+      self.getVenues(location);
 
      }; // end showLocation
 
+ self.getVenues = function (location) {
+ // console.log(location.lat);
+ 
+  //  console.log(location);
+   $.ajax({
+        url: 'https://api.foursquare.com/v2/venues/search?ll='+location.LatLng.lat+','+location.LatLng.lng+'&intent=match&name='+location.name+'&client_id=JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF&client_secret=ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D&v=20170526'
+      })
+      .done(function(data){
+        var venue = data.response.venues[0];
+
+        //set fetched info as properties of location object
+        location.id = ko.observable(venue.id);
+//console.log(venue.id);
+        if (venue.hasOwnProperty('url')) {
+          location.url = ko.observable(venue.url);
+        }
+        if (venue.hasOwnProperty('contact') && venue.contact.hasOwnProperty('formattedPhone')) {
+          location.phone = ko.observable(venue.contact.formattedPhone);
+        }
+
+        // use id to get photo
+        $.ajax({
+          url: 'https://api.foursquare.com/v2/venues/'+location.id()+'?oauth_token=R5YPRIGI1HFJXM15BEWHFGKPVIJBTXJOKK5BMODOQFZFB115&v=20170530'
+        })
+        .done(function(data){
+          console.log(data.response);
+        //  console.log(data.response.venue.rating);
+          // set first photo url as the location photo property
+                  var result = data.response.venue.photos.groups["0"].items;
+                   var largeInfowindow = new google.maps.InfoWindow();
+
+                            largeInfowindow.open(map, location.marker);
+
+                           
+                                largeInfowindow.setContent('<div class="infowindow"><h6>'+data.response.venue.name+
+                                  '</h6> Rating: '
+                                  + '<span class="rating">'+data.response.venue.rating+'</span>'
+                                  +'<img class="sq" src="'
+                                 + result[0].prefix + 'width200' + result[0].suffix + '"><h8> Website <a class="web-links" href="http://' + data.response.venue.url + 
+                                    '" target="_blank">' + data.response.venue.url  + '</a>'+' </h8></div>');
+                         
+self.scrollTo('#map');
+         
+         // location.initialized(true);
+
+          // set current location and scroll user to information
+       //   self.currentPlace(location);
+        //  
+        })
+        .fail(function(err) {
+          // if there is an error, set error status and scroll user to the info
+        //  self.connectionError(true);
+         // self.scrollTo('#info-container');
+         console.log("error");
+        });
+
+      })
+      .fail(function(err) {
+        // if there is an error, set error status and scroll user to the info
+      //  self.connectionError(true);
+        //self.scrollTo('#info-container');
+        console.log("error");
+
+      });
+     
+  }// end getVenues 
+
+  self.scrollTo = function(el) {
+    $('html, body').animate({ scrollTop: $(el).offset().top }, "slow");
+  };
 
  }; //end view
 
@@ -232,15 +274,19 @@
          markers.push(marker);
 
          vm.locationsArray()[i].marker = marker;
-          marker.addListener('click', function() {
-			  var mark = this;
-			  loaddata(locations[i]);
-			 //  toggleBounce(this);
-            setTimeout(function() {
-                mark.setAnimation(null);
-            }, 1000);
-            populateInfoWindow(this, largeInfowindow);
-          });
+   
+       // console.log(locations[i].name);
+      //   vm.getVenues(locations[i]);
+         // Create an onclick event to open an infowindow at each marker.
+     //  marker.addListener('click', vm.getVenues(locations[i]));
+       // click handler for google maps marker
+  google.maps.event.addListener(marker, 'click', (function(location, vm) {
+    return function() {
+      // tell viewmodel to show this place
+      vm.getVenues(location);
+    };
+  }) (locations[i], vm));
+
           bounds.extend(markers[i].position);
      }
 	 
@@ -260,7 +306,9 @@
              infowindow.setMarker = null;
          });
      }
- }
+ }//end populateInfoWindow
+
+
 
 
 

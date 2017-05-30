@@ -29,6 +29,22 @@ body {
   overflow: hidden;
 }
 
+.rating{
+  color: green;
+  font-weight: bold;
+}
+
+.sq {
+max-width: 150px;
+max-height: 150px;
+display:block;
+margin:auto;
+}
+
+.infowindow{
+font-weight: bold;
+}
+
 button, input, select {
   font-family: 'Julius Sans One', sans-serif !important;
 }
