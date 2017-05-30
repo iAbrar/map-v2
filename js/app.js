@@ -214,7 +214,7 @@ function initialize() {
         zoom: 12
     };
     map = new google.maps.Map(document.getElementById("map"), mapOptions);
-    showMarkers(initialLocation);
+    showMarkers(vm.locationsArray());
 
 }
 
