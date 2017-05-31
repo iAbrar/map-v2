@@ -80,7 +80,7 @@ var Location = function(data) {
 var ViewModel = function() {
     var self = this;
     self.currentPlace = ko.observable();
-  
+
 
     // *******************************
     // *      SELECTED CATEGORY         *
@@ -142,70 +142,70 @@ var ViewModel = function() {
         map.setZoom(16);
         map.setCenter(location.marker.getPosition());
         google.maps.event.trigger(location.marker, 'click');
-     		self.getVenues(location);
-     	//	google.maps.event.addListener(location.marker, 'click', clickListener);
-     
+        self.getVenues(location);
+        //	google.maps.event.addListener(location.marker, 'click', clickListener);
+
 
     }; // end showLocation
 
-  self.clickListener = function() {
-    if(bouncingMarker)
-        bouncingMarker.setAnimation(null);
-    if(bouncingMarker != this) {
-        this.setAnimation(google.maps.Animation.BOUNCE);
-        bouncingMarker = this;
-    } else
-        bouncingMarker = null;
-};
+    self.clickListener = function() {
+        if (bouncingMarker)
+            bouncingMarker.setAnimation(null);
+        if (bouncingMarker != this) {
+            this.setAnimation(google.maps.Animation.BOUNCE);
+            bouncingMarker = this;
+        } else
+            bouncingMarker = null;
+    };
     self.getVenues = function(location) {
-       
-            $.ajax({
-                    url: 'https://api.foursquare.com/v2/venues/search?ll=' + location.LatLng.lat + ',' + location.LatLng.lng + '&intent=match&name=' + location.name + '&client_id=JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF&client_secret=ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D&v=20170526'
-                })
-                .done(function(data) {
-                    var venue = data.response.venues[0];
 
-                    //set fetched info as properties of location object
-                    location.id = ko.observable(venue.id);
+        $.ajax({
+                url: 'https://api.foursquare.com/v2/venues/search?ll=' + location.LatLng.lat + ',' + location.LatLng.lng + '&intent=match&name=' + location.name + '&client_id=JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF&client_secret=ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D&v=20170526'
+            })
+            .done(function(data) {
+                var venue = data.response.venues[0];
 
-
-                    // use id to get photo
-                    $.ajax({
-                            url: 'https://api.foursquare.com/v2/venues/' + location.id() + '?oauth_token=R5YPRIGI1HFJXM15BEWHFGKPVIJBTXJOKK5BMODOQFZFB115&v=20170530'
-                        })
-                        .done(function(data) {
-                          
-                            // set first photo url as the location photo property
-                            var photos = data.response.venue.photos.groups["0"].items || "there is no photo";
-                        var url = data.response.venue.url  || 'No url provided';
-                      var name = data.response.venue.name || 'No name provided';
-                      var rating =  data.response.venue.rating || 'No rating provided';
-                           largeInfowindow.open(map, location.marker);
+                //set fetched info as properties of location object
+                location.id = ko.observable(venue.id);
 
 
-                           largeInfowindow.setContent('<div class="infowindow"><h6>' + name +
-                                '</h6> Rating: ' + '<span class="rating">' + rating + '</span>' + '<img class="sq" src="' + photos[0].prefix + 'width200' + photos[0].suffix + '"><h8> Website <a class="web-links" href="http://' + url +
-                                '" target="_blank">' + url + '</a>' + ' </h8></div>');
+                // use id to get photo
+                $.ajax({
+                        url: 'https://api.foursquare.com/v2/venues/' + location.id() + '?oauth_token=R5YPRIGI1HFJXM15BEWHFGKPVIJBTXJOKK5BMODOQFZFB115&v=20170530'
+                    })
+                    .done(function(data) {
 
-                            // set current location and scroll user to information
-                             self.scrollTo('#map');
+                        // set first photo url as the location photo property
+                        var photos = data.response.venue.photos.groups["0"].items || "there is no photo";
+                        var url = data.response.venue.url || 'No url provided';
+                        var name = data.response.venue.name || 'No name provided';
+                        var rating = data.response.venue.rating || 'No rating provided';
+                        largeInfowindow.open(map, location.marker);
 
-                        })
-                        .fail(function(err) {
-                            // if there is an error, set error status 
-                            
-                           alert("Sorry, there is an error to view the information");
-                        });
 
-                })
-                .fail(function(err) {
-                    // if there is an error, set error status
-               
-                           alert("Sorry, there is an error to view the information");
+                        largeInfowindow.setContent('<div class="infowindow"><h6>' + name +
+                            '</h6> Rating: ' + '<span class="rating">' + rating + '</span>' + '<img class="sq" src="' + photos[0].prefix + 'width200' + photos[0].suffix + '"><h8> Website <a class="web-links" href="http://' + url +
+                            '" target="_blank">' + url + '</a>' + ' </h8></div>');
 
-                });
+                        // set current location and scroll user to information
+                        self.scrollTo('#map');
 
-        }; // end getVenues 
+                    })
+                    .fail(function(err) {
+                        // if there is an error, set error status 
+
+                        alert("Sorry, there is an error to view the information");
+                    });
+
+            })
+            .fail(function(err) {
+                // if there is an error, set error status
+
+                alert("Sorry, there is an error to view the information");
+
+            });
+
+    }; // end getVenues 
 
     self.scrollTo = function(el) {
         $('html, body').animate({
@@ -226,7 +226,7 @@ function initialize() {
     };
     map = new google.maps.Map(document.getElementById("map"), mapOptions);
     largeInfowindow = new google.maps.InfoWindow();
-    
+
     showMarkers(vm.locationsArray());
 
 }
@@ -256,29 +256,31 @@ function showMarkers(locations) {
 
         vm.locationsArray()[i].marker = marker;
 
- 
+
         // click handler for google maps marker
         google.maps.event.addListener(marker, 'click', (function(location, vm) {
             return function() {
                 // tell viewmodel to show this place
+                map.setZoom(16);
+                map.setCenter(location.marker.getPosition());
                 vm.getVenues(location);
             };
         })(locations[i], vm));
 
-        	//google.maps.event.addListener(marker, 'click', mv.clickListener());
+        //google.maps.event.addListener(marker, 'click', mv.clickListener());
 
         bounds.extend(markers[i].position);
     }
 
 }
 
-    /*  function toggleBounce() {
-        if (marker.getAnimation() !== null) {
-          marker.setAnimation(null);
-        } else {
-          marker.setAnimation(google.maps.Animation.BOUNCE);
-        }
-      }*/
+/*  function toggleBounce() {
+    if (marker.getAnimation() !== null) {
+      marker.setAnimation(null);
+    } else {
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+    }
+  }*/
 
 // *******************************
 // *      ERROR Handling         *
