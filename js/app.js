@@ -146,6 +146,7 @@ var ViewModel = function() {
                     location.marker.setAnimation( null );
                 } else {
                     location.marker.setAnimation( google.maps.Animation.BOUNCE );
+                    setTimeout(function(){ location.marker.setAnimation(null); }, 1400);  // stop after 2 bounces
                 }
                 largeInfowindow.open( map, location.marker );
                 largeInfowindow.setContent( '<div class="infowindow"><h6>' + name + '</h6> Rating: ' + '<span class="rating">' + rating + '</span>' + '<img class="sq" src="' + photos[ 0 ].prefix + 'width200' + photos[ 0 ].suffix + '"><h8> Website <a class="web-links" href="http://' + url + '" target="_blank">' + url + '</a>' + ' </h8></div>' );
