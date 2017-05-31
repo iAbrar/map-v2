@@ -122,7 +122,7 @@ var ViewModel = function() {
             return self.locationsArray();
 
         } else {
-          //close info window when the category changed 
+          //close info window when the category changed
                          largeInfowindow.close();
 
             // input found, match location category to filter
@@ -176,6 +176,13 @@ var ViewModel = function() {
                         var url = data.response.venue.url || 'No url provided';
                         var name = data.response.venue.name || 'No name provided';
                         var rating = data.response.venue.rating || 'No rating provided';
+
+ if (location.marker.getAnimation() !== null) {
+          location.marker.setAnimation(null);
+        } else {
+          location.marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+
                         largeInfowindow.open(map, location.marker);
 
 
