@@ -2,7 +2,6 @@
 
 var map;
 var largeInfowindow;
-var defaultIcon, highlightedIcon;
 
 var initialLocation = [{
     name: "Nino",
@@ -212,12 +211,6 @@ function initialize() {
     };
     map = new google.maps.Map(document.getElementById("map"), mapOptions);
     largeInfowindow = new google.maps.InfoWindow();
-
-     // Style the markers a bit. This will be our listing marker icon.
-       defaultIcon = makeMarkerIcon('0091ff');
-        // Create a "highlighted location" marker color for when the user
-        // mouses over the marker.
-        highlightedIcon = makeMarkerIcon('FFFF24');
     
     showMarkers(vm.locationsArray());
 
@@ -256,29 +249,20 @@ function showMarkers(locations) {
                 vm.getVenues(location);
             };
         })(locations[i], vm));
- // Two event listeners - one for mouseover, one for mouseout,
-          // to change the colors back and forth.
-          marker.addListener('mouseover', function() {
-            this.setIcon(highlightedIcon);
-          });
-          marker.addListener('mouseout', function() {
-            this.setIcon(defaultIcon);
-          });
-        
+
+         marker.addListener('click', toggleBounce);
+
         bounds.extend(markers[i].position);
     }
 
 }
 
-      function makeMarkerIcon(markerColor) {
-        var markerImage = new google.maps.MarkerImage(
-          'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-          '|40|_|%E2%80%A2',
-          new google.maps.Size(21, 34),
-          new google.maps.Point(0, 0),
-          new google.maps.Point(10, 34),
-          new google.maps.Size(21,34));
-        return markerImage;
+      function toggleBounce() {
+        if (marker.getAnimation() !== null) {
+          marker.setAnimation(null);
+        } else {
+          marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
       }
 
 // *******************************
