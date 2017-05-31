@@ -1,12 +1,9 @@
 "use strict";
-
 var map;
 var largeInfowindow;
 var bounds;
 var marker;
-
-
-var initialLocation = [{
+var initialLocation = [ {
     name: "Nino",
     LatLng: {
         lat: 24.698162,
@@ -62,18 +59,14 @@ var initialLocation = [{
         lng: 46.670512
     },
     category: "Shopping"
-}];
+} ];
 // create Location class
-var Location = function(data) {
-    this.name = ko.observable(data.name);
-    this.LatLng = ko.observable(data.LatLng);
-    this.category = ko.observable(data.category);
-    this.visible = ko.observable(true);
+var Location = function( data ) {
+    this.name = ko.observable( data.name );
+    this.LatLng = ko.observable( data.LatLng );
+    this.category = ko.observable( data.category );
+    this.visible = ko.observable( true );
 };
-
-
-
-
 // the viewModel
 // *******************************
 // *          VIEW MODEL         *
@@ -81,221 +74,150 @@ var Location = function(data) {
 var ViewModel = function() {
     var self = this;
     self.currentPlace = ko.observable();
-
-
     // *******************************
     // *      SELECTED CATEGORY         *
     // *******************************
     self.categoryList = [];
-
     // dynamically retrieve categories to
     // create drop down list later
-    initialLocation.map(location => {
-        if (!self.categoryList.includes(location.category)) {
-            self.categoryList.push(location.category);
+    initialLocation.map( location => {
+        if ( !self.categoryList.includes( location.category ) ) {
+            self.categoryList.push( location.category );
         }
-    });
-
-    self.locationsArray = ko.observableArray(initialLocation);
-
+    } );
+    self.locationsArray = ko.observableArray( initialLocation );
     // Observable Array for drop down list
-    self.categories = ko.observableArray(self.categoryList);
+    self.categories = ko.observableArray( self.categoryList );
     // self will hold the selected value from drop down menu
     self.selectedCategory = ko.observable();
-
     /**
      * Filter function, return filtered location by
      * selected category from <select>
      */
-    self.filteredLocation = ko.computed(() => {
-
-        if (!self.selectedCategory()) {
-
-            self.locationsArray().forEach(function(location) {
-                if (location.marker) {
-                    location.marker.setVisible(true);
+    self.filteredLocation = ko.computed( () => {
+        if ( !self.selectedCategory() ) {
+            self.locationsArray().forEach( function( location ) {
+                if ( location.marker ) {
+                    location.marker.setVisible( true );
                 }
-
-            });
+            } );
             // No input found, return all location
-
             return self.locationsArray();
-
         } else {
-          //close info window when the category changed
-                         largeInfowindow.close();
-
+            //close info window when the category changed
+            largeInfowindow.close();
             // input found, match location category to filter
-            return ko.utils.arrayFilter(self.locationsArray(), location => {
-
+            return ko.utils.arrayFilter( self.locationsArray(), location => {
                 // select all location in the same category 
-
                 var match = location.category === self.selectedCategory(); // return true or false 
-                location.marker.setVisible(match);
+                location.marker.setVisible( match );
                 return match;
-            });
-
+            } );
         } //.conditional
-
-    }); //.filteredLocation
-
-    self.showLocation = function(location) {
-        // console.log(location);
+    } ); //.filteredLocation
+    // *******************************
+    // *        VIEW FUNCTIONS       *
+    // *******************************
+    self.showLocation = function( location ) {
         //google.maps.event.trigger() method
         // location.marker, "click"
-        map.setZoom(16);
-        map.setCenter(location.marker.getPosition());
-        google.maps.event.trigger(location.marker, 'click');
-        self.getVenues(location);
-        //	google.maps.event.addListener(location.marker, 'click', clickListener);
-
-
+        map.setZoom( 16 );
+        map.setCenter( location.marker.getPosition() );
+        google.maps.event.trigger( location.marker, 'click' );
+        self.getVenues( location );
     }; // end showLocation
-
-
-    self.getVenues = function(location) {
-
-        $.ajax({
-                url: 'https://api.foursquare.com/v2/venues/search?ll=' + location.LatLng.lat + ',' + location.LatLng.lng + '&intent=match&name=' + location.name + '&client_id=JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF&client_secret=ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D&v=20170526'
-            })
-            .done(function(data) {
-                var venue = data.response.venues[0];
-
-                //set fetched info as properties of location object
-                location.id = ko.observable(venue.id);
-
-
-                // use id to get photo
-                $.ajax({
-                        url: 'https://api.foursquare.com/v2/venues/' + location.id() + '?oauth_token=R5YPRIGI1HFJXM15BEWHFGKPVIJBTXJOKK5BMODOQFZFB115&v=20170530'
-                    })
-                    .done(function(data) {
-
-                        // set first photo url as the location photo property
-                        var photos = data.response.venue.photos.groups["0"].items || "there is no photo";
-                        var url = data.response.venue.url || 'No url provided';
-                        var name = data.response.venue.name || 'No name provided';
-                        var rating = data.response.venue.rating || 'No rating provided';
-
- if (location.marker.getAnimation() !== null) {
-          location.marker.setAnimation(null);
-        } else {
-          location.marker.setAnimation(google.maps.Animation.BOUNCE);
-        }
-
-                        largeInfowindow.open(map, location.marker);
-
-
-                        largeInfowindow.setContent('<div class="infowindow"><h6>' + name +
-                            '</h6> Rating: ' + '<span class="rating">' + rating + '</span>' + '<img class="sq" src="' + photos[0].prefix + 'width200' + photos[0].suffix + '"><h8> Website <a class="web-links" href="http://' + url +
-                            '" target="_blank">' + url + '</a>' + ' </h8></div>');
-
-                        // set current location and scroll user to information
-                        self.scrollTo('#map');
-
-                    })
-                    .fail(function(err) {
-                        // if there is an error, set error status 
-
-                        alert("Sorry, there is an error to view the information");
-                    });
-
-            })
-            .fail(function(err) {
-                // if there is an error, set error status
-
-                alert("Sorry, there is an error to view the information");
-
-            });
-
+    self.getVenues = function( location ) {
+        $.ajax( {
+            url: 'https://api.foursquare.com/v2/venues/search?ll=' + location.LatLng.lat + ',' + location.LatLng.lng + '&intent=match&name=' + location.name + '&client_id=JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF&client_secret=ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D&v=20170526'
+        } ).done( function( data ) {
+            var venue = data.response.venues[ 0 ];
+            //set fetched info as properties of location object
+            location.id = ko.observable( venue.id );
+            // use id to get photo
+            $.ajax( {
+                url: 'https://api.foursquare.com/v2/venues/' + location.id() + '?oauth_token=R5YPRIGI1HFJXM15BEWHFGKPVIJBTXJOKK5BMODOQFZFB115&v=20170530'
+            } ).done( function( data ) {
+                // set first photo url as the location photo property
+                var photos = data.response.venue.photos.groups[ "0" ].items || "there is no photo";
+                var url = data.response.venue.url || 'No url provided';
+                var name = data.response.venue.name || 'No name provided';
+                var rating = data.response.venue.rating || 'No rating provided';
+                if ( location.marker.getAnimation() !== null ) {
+                    location.marker.setAnimation( null );
+                } else {
+                    location.marker.setAnimation( google.maps.Animation.BOUNCE );
+                }
+                largeInfowindow.open( map, location.marker );
+                largeInfowindow.setContent( '<div class="infowindow"><h6>' + name + '</h6> Rating: ' + '<span class="rating">' + rating + '</span>' + '<img class="sq" src="' + photos[ 0 ].prefix + 'width200' + photos[ 0 ].suffix + '"><h8> Website <a class="web-links" href="http://' + url + '" target="_blank">' + url + '</a>' + ' </h8></div>' );
+                // set current location and scroll user to information
+                self.scrollTo( '#map' );
+            } ).fail( function( err ) {
+                // if there is an error, set error status 
+                alert( "Sorry, there is an error to view the information" );
+            } );
+        } ).fail( function( err ) {
+            // if there is an error, set error status
+            alert( "Sorry, there is an error to view the information" );
+        } );
     }; // end getVenues 
-
-    self.scrollTo = function(el) {
-        $('html, body').animate({
-            scrollTop: $(el).offset().top
-        }, "slow");
+    self.scrollTo = function( el ) {
+        $( 'html, body' ).animate( {
+            scrollTop: $( el ).offset().top
+        }, "slow" );
     };
-
 }; //end view
-
 // *******************************
-// *        FUNCTIONS            *
+// *     Initialization          *
 // *******************************
 function initialize() {
     // Constructor creates a new map - only center and zoom are required.
     var mapOptions = {
-        center: new google.maps.LatLng(24.697285134978586, 46.685779094696045),
+        center: new google.maps.LatLng( 24.697285134978586, 46.685779094696045 ),
         zoom: 12
     };
-    map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    map = new google.maps.Map( document.getElementById( "map" ), mapOptions );
     largeInfowindow = new google.maps.InfoWindow();
-
-    showMarkers(vm.locationsArray());
-
+    showMarkers( vm.locationsArray() );
 }
 
-function showMarkers(locations) {
-
-
+function showMarkers( locations ) {
     var markers = [];
     bounds = new google.maps.LatLngBounds();
     //  
     // The following group uses the location array to create an array of markers on initialize.
-    for (var i = 0; i < locations.length; i++) {
+    for ( var i = 0; i < locations.length; i++ ) {
         // Get the position from the location array.
-        var position = locations[i].LatLng;
-        var title = locations[i].name;
-
+        var position = locations[ i ].LatLng;
+        var title = locations[ i ].name;
         // Create a marker per location, and put into markers array.
-         marker = new google.maps.Marker({
+        marker = new google.maps.Marker( {
             map: map,
             position: position,
             title: title,
             animation: google.maps.Animation.DROP,
             id: i
-        });
+        } );
         // Push the marker to our array of markers.
-        markers.push(marker);
-
-        vm.locationsArray()[i].marker = marker;
-
-
+        markers.push( marker );
+        vm.locationsArray()[ i ].marker = marker;
         // click handler for google maps marker
-        google.maps.event.addListener(marker, 'click', (function(location, vm) {
-      
+        google.maps.event.addListener( marker, 'click', ( function( location, vm ) {
             return function() {
                 // tell viewmodel to show this place
-                map.setZoom(16);
-                map.setCenter(location.marker.getPosition());
-                vm.getVenues(location);
+                map.setZoom( 16 );
+                map.setCenter( location.marker.getPosition() );
+                vm.getVenues( location );
             };
-
-        })(locations[i], vm));
-
+        } )( locations[ i ], vm ) );
         //google.maps.event.addListener(marker, 'click', mv.clickListener());
-
-        bounds.extend(markers[i].position);
+        bounds.extend( markers[ i ].position );
     }
-
 }
-
-  function toggleBounce(marker) {
-    if (marker.getAnimation() !== null) {
-      marker.setAnimation(null);
-    } else {
-      marker.setAnimation(google.maps.Animation.BOUNCE);
-    }
-  }
-
 // *******************************
 // *      ERROR Handling         *
 // *******************************
-
 function ErrorHandling() {
-    alert(
-        "Google Maps has failed to load. Please check your internet connection and try again."
-    );
+    alert( "Google Maps has failed to load. Please check your internet connection and try again." );
 }
-
 var vm = new ViewModel();
-ko.applyBindings(vm);
+ko.applyBindings( vm );
