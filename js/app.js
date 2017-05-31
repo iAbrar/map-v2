@@ -256,7 +256,15 @@ function showMarkers(locations) {
                 vm.getVenues(location);
             };
         })(locations[i], vm));
-
+ // Two event listeners - one for mouseover, one for mouseout,
+          // to change the colors back and forth.
+          marker.addListener('mouseover', function() {
+            this.setIcon(highlightedIcon);
+          });
+          marker.addListener('mouseout', function() {
+            this.setIcon(defaultIcon);
+          });
+        }
         bounds.extend(markers[i].position);
     }
 
