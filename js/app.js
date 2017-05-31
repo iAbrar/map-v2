@@ -142,8 +142,9 @@ var ViewModel = function() {
         map.setZoom(16);
         map.setCenter(location.marker.getPosition());
         google.maps.event.trigger(location.marker, 'click');
-     		google.maps.event.addListener(location.marker, 'click', clickListener);
-        self.getVenues(location);
+     		self.getVenues(location);
+     	//	google.maps.event.addListener(location.marker, 'click', clickListener);
+     
 
     }; // end showLocation
 
@@ -175,14 +176,16 @@ var ViewModel = function() {
                         .done(function(data) {
                           
                             // set first photo url as the location photo property
-                            var result = data.response.venue.photos.groups["0"].items;
-                        
+                            var photos = data.response.venue.photos.groups["0"].items || "there is no photo";
+                        var url = data.response.venue.url  || 'No url provided';
+                      var name = data.response.venue.name || 'No name provided';
+                      var rating =  data.response.venue.rating || 'No rating provided';
                            largeInfowindow.open(map, location.marker);
 
 
-                           largeInfowindow.setContent('<div class="infowindow"><h6>' + data.response.venue.name +
-                                '</h6> Rating: ' + '<span class="rating">' + data.response.venue.rating + '</span>' + '<img class="sq" src="' + result[0].prefix + 'width200' + result[0].suffix + '"><h8> Website <a class="web-links" href="http://' + data.response.venue.url +
-                                '" target="_blank">' + data.response.venue.url + '</a>' + ' </h8></div>');
+                           largeInfowindow.setContent('<div class="infowindow"><h6>' + name +
+                                '</h6> Rating: ' + '<span class="rating">' + rating + '</span>' + '<img class="sq" src="' + photos[0].prefix + 'width200' + photos[0].suffix + '"><h8> Website <a class="web-links" href="http://' + url +
+                                '" target="_blank">' + url + '</a>' + ' </h8></div>');
 
                             // set current location and scroll user to information
                              self.scrollTo('#map');
@@ -262,7 +265,7 @@ function showMarkers(locations) {
             };
         })(locations[i], vm));
 
-        	google.maps.event.addListener(marker, 'click', mv.clickListener());
+        	//google.maps.event.addListener(marker, 'click', mv.clickListener());
 
         bounds.extend(markers[i].position);
     }
