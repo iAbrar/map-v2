@@ -178,16 +178,16 @@ var ViewModel = function() {
 
                         })
                         .fail(function(err) {
-                            // if there is an error, set error status and scroll user to the info
+                            // if there is an error, set error status 
                             
-                            console.log("error");
+                           alert(err);
                         });
 
                 })
                 .fail(function(err) {
-                    // if there is an error, set error status and scroll user to the info
+                    // if there is an error, set error status
                
-                    console.log("error");
+                     alert(err);
 
                 });
 
