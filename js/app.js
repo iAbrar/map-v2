@@ -2,6 +2,7 @@
 
 var map;
 var largeInfowindow;
+var bounds;
 
 var initialLocation = [{
     name: "Nino",
@@ -220,7 +221,7 @@ function showMarkers(locations) {
 
 
     var markers = [];
-    var bounds = new google.maps.LatLngBounds();
+    bounds = new google.maps.LatLngBounds();
     //  
     // The following group uses the location array to create an array of markers on initialize.
     for (var i = 0; i < locations.length; i++) {
@@ -250,7 +251,7 @@ function showMarkers(locations) {
             };
         })(locations[i], vm));
 
-         marker.addListener('click', toggleBounce);
+         locations[i].marker.addListener('click', toggleBounce);
 
         bounds.extend(markers[i].position);
     }
