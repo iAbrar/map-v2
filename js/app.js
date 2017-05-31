@@ -264,7 +264,7 @@ function showMarkers(locations) {
           marker.addListener('mouseout', function() {
             this.setIcon(defaultIcon);
           });
-        }
+        
         bounds.extend(markers[i].position);
     }
 
