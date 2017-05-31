@@ -191,7 +191,7 @@ var ViewModel = function() {
 
                 });
 
-        } // end getVenues 
+        }; // end getVenues 
 
     self.scrollTo = function(el) {
         $('html, body').animate({
