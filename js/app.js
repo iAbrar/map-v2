@@ -3,7 +3,8 @@
 var map;
 var largeInfowindow;
 var bounds;
-var bouncingMarker = null;
+var marker;
+
 
 var initialLocation = [{
     name: "Nino",
@@ -107,6 +108,7 @@ var ViewModel = function() {
      * selected category from <select>
      */
     self.filteredLocation = ko.computed(() => {
+
         if (!self.selectedCategory()) {
 
             self.locationsArray().forEach(function(location) {
@@ -120,6 +122,8 @@ var ViewModel = function() {
             return self.locationsArray();
 
         } else {
+          //close info window when the category changed 
+                         largeInfowindow.close();
 
             // input found, match location category to filter
             return ko.utils.arrayFilter(self.locationsArray(), location => {
@@ -148,15 +152,7 @@ var ViewModel = function() {
 
     }; // end showLocation
 
-    self.clickListener = function() {
-        if (bouncingMarker)
-            bouncingMarker.setAnimation(null);
-        if (bouncingMarker != this) {
-            this.setAnimation(google.maps.Animation.BOUNCE);
-            bouncingMarker = this;
-        } else
-            bouncingMarker = null;
-    };
+
     self.getVenues = function(location) {
 
         $.ajax({
@@ -244,7 +240,7 @@ function showMarkers(locations) {
         var title = locations[i].name;
 
         // Create a marker per location, and put into markers array.
-        var marker = new google.maps.Marker({
+         marker = new google.maps.Marker({
             map: map,
             position: position,
             title: title,
@@ -259,12 +255,14 @@ function showMarkers(locations) {
 
         // click handler for google maps marker
         google.maps.event.addListener(marker, 'click', (function(location, vm) {
+      
             return function() {
                 // tell viewmodel to show this place
                 map.setZoom(16);
                 map.setCenter(location.marker.getPosition());
                 vm.getVenues(location);
             };
+
         })(locations[i], vm));
 
         //google.maps.event.addListener(marker, 'click', mv.clickListener());
@@ -274,13 +272,13 @@ function showMarkers(locations) {
 
 }
 
-/*  function toggleBounce() {
+  function toggleBounce(marker) {
     if (marker.getAnimation() !== null) {
       marker.setAnimation(null);
     } else {
       marker.setAnimation(google.maps.Animation.BOUNCE);
     }
-  }*/
+  }
 
 // *******************************
 // *      ERROR Handling         *
