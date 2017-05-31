@@ -3,6 +3,7 @@
 var map;
 var largeInfowindow;
 var bounds;
+var bouncingMarker = null;
 
 var initialLocation = [{
     name: "Nino",
@@ -141,10 +142,20 @@ var ViewModel = function() {
         map.setZoom(16);
         map.setCenter(location.marker.getPosition());
         google.maps.event.trigger(location.marker, 'click');
+     		google.maps.event.addListener(location.marker, 'click', clickListener);
         self.getVenues(location);
 
     }; // end showLocation
 
+  self.clickListener = function() {
+    if(bouncingMarker)
+        bouncingMarker.setAnimation(null);
+    if(bouncingMarker != this) {
+        this.setAnimation(google.maps.Animation.BOUNCE);
+        bouncingMarker = this;
+    } else
+        bouncingMarker = null;
+};
     self.getVenues = function(location) {
        
             $.ajax({
@@ -251,20 +262,20 @@ function showMarkers(locations) {
             };
         })(locations[i], vm));
 
-         locations[i].marker.addListener('click', toggleBounce);
+        	google.maps.event.addListener(marker, 'click', mv.clickListener());
 
         bounds.extend(markers[i].position);
     }
 
 }
 
-      function toggleBounce() {
+    /*  function toggleBounce() {
         if (marker.getAnimation() !== null) {
           marker.setAnimation(null);
         } else {
           marker.setAnimation(google.maps.Animation.BOUNCE);
         }
-      }
+      }*/
 
 // *******************************
 // *      ERROR Handling         *
