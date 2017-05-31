@@ -129,7 +129,9 @@ var ViewModel = function() {
                 location.marker.setVisible(match);
                 return match;
             });
+
         } //.conditional
+
     }); //.filteredLocation
 
     self.showLocation = function(location) {
@@ -145,7 +147,7 @@ var ViewModel = function() {
 
     self.getVenues = function(location) {
             // console.log(location.lat);
-
+//populateInfoWindow();
             //  console.log(location);
             $.ajax({
                     url: 'https://api.foursquare.com/v2/venues/search?ll=' + location.LatLng.lat + ',' + location.LatLng.lng + '&intent=match&name=' + location.name + '&client_id=JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF&client_secret=ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D&v=20170526'
@@ -165,12 +167,12 @@ var ViewModel = function() {
                           
                             // set first photo url as the location photo property
                             var result = data.response.venue.photos.groups["0"].items;
-                            largeInfowindow = new google.maps.InfoWindow();
+                          //  largeInfowindow = new google.maps.InfoWindow();
 
-                            largeInfowindow.open(map, location.marker);
+                           largeInfowindow.open(map, location.marker);
 
 
-                            largeInfowindow.setContent('<div class="infowindow"><h6>' + data.response.venue.name +
+                           largeInfowindow.setContent('<div class="infowindow"><h6>' + data.response.venue.name +
                                 '</h6> Rating: ' + '<span class="rating">' + data.response.venue.rating + '</span>' + '<img class="sq" src="' + result[0].prefix + 'width200' + result[0].suffix + '"><h8> Website <a class="web-links" href="http://' + data.response.venue.url +
                                 '" target="_blank">' + data.response.venue.url + '</a>' + ' </h8></div>');
 
@@ -180,16 +182,14 @@ var ViewModel = function() {
                         })
                         .fail(function(err) {
                             // if there is an error, set error status and scroll user to the info
-                            //  self.connectionError(true);
-                            // self.scrollTo('#info-container');
+                            
                             console.log("error");
                         });
 
                 })
                 .fail(function(err) {
                     // if there is an error, set error status and scroll user to the info
-                    //  self.connectionError(true);
-                    //self.scrollTo('#info-container');
+               
                     console.log("error");
 
                 });
@@ -214,6 +214,8 @@ function initialize() {
         zoom: 12
     };
     map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    largeInfowindow = new google.maps.InfoWindow();
+
     showMarkers(vm.locationsArray());
 
 }
@@ -224,8 +226,7 @@ function showMarkers(locations) {
 
     var markers = [];
     var bounds = new google.maps.LatLngBounds();
-    //  largeInfowindow = new google.maps.InfoWindow();
-
+    //  
     // The following group uses the location array to create an array of markers on initialize.
     for (var i = 0; i < locations.length; i++) {
         // Get the position from the location array.
