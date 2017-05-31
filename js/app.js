@@ -159,7 +159,7 @@ var ViewModel = function() {
 
                     // use id to get photo
                     $.ajax({
-                            url: 'https://api.foursquare.com/v2/venues/' + location.id() + '?oauth_token=R5YPRIGI1HFJXM15BEWHFGKPVIJBTXJOKK5BMODOQFZFB115&v=20170530'
+                            url: 'https://api.foursquare.com/v2//' + location.id() + '?oauth_token=R5YPRIGI1HFJXM15BEWHFGKPVIJBTXJOKK5BMODOQFZFB115&v=20170530'
                         })
                         .done(function(data) {
                           
