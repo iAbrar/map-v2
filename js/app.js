@@ -118,15 +118,22 @@ var ViewModel = function() {
     // *******************************
     // *        VIEW FUNCTIONS       *
     // *******************************
-    self.showLocation = function( location ) {
-        //google.maps.event.trigger() method
-        // location.marker, "click"
-        map.setZoom( 16 );
-        map.setCenter( location.marker.getPosition() );
-        google.maps.event.trigger( location.marker, 'click' );
-        self.getVenues( location );
-    }; // end showLocation
+
     self.getVenues = function( location ) {
+       map.setZoom( 16 );
+        map.setCenter( location.marker.getPosition() );
+       // google.maps.event.trigger( location.marker, 'click' );
+           if ( location.marker.getAnimation() !== null ) {
+                    location.marker.setAnimation( null );
+                } else {
+                    location.marker.setAnimation( google.maps.Animation.BOUNCE );
+                    setTimeout(function(){ location.marker.setAnimation(null); }, 1400);  // stop after 2 bounces
+                }
+                // reset content 
+                 largeInfowindow.setContent("");
+                        largeInfowindow.open( map, location.marker );
+
+
         $.ajax( {
             url: 'https://api.foursquare.com/v2/venues/search?ll=' + location.LatLng.lat + ',' + location.LatLng.lng + '&intent=match&name=' + location.name + '&client_id=JMBQJXEH5V0OWT1WJ4SI0HROBCEE2NZRPWDNRYZQ4ENK3RVF&client_secret=ZWZC2S3KW4XAN33HJHCMY0L1Q0X5MOKELZHS4SVI5J5CM25D&v=20170526'
         } ).done( function( data ) {
@@ -142,13 +149,7 @@ var ViewModel = function() {
                 var url = data.response.venue.url || 'No url provided';
                 var name = data.response.venue.name || 'No name provided';
                 var rating = data.response.venue.rating || 'No rating provided';
-                if ( location.marker.getAnimation() !== null ) {
-                    location.marker.setAnimation( null );
-                } else {
-                    location.marker.setAnimation( google.maps.Animation.BOUNCE );
-                    setTimeout(function(){ location.marker.setAnimation(null); }, 1400);  // stop after 2 bounces
-                }
-                largeInfowindow.open( map, location.marker );
+            
                 largeInfowindow.setContent( '<div class="infowindow"><h6>' + name + '</h6> Rating: ' + '<span class="rating">' + rating + '</span>' + '<img class="sq" src="' + photos[ 0 ].prefix + 'width200' + photos[ 0 ].suffix + '"><h8> Website <a class="web-links" href="http://' + url + '" target="_blank">' + url + '</a>' + ' </h8></div>' );
                 // set current location and scroll user to information
                 self.scrollTo( '#map' );
